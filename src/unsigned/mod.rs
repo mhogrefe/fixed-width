@@ -4,8 +4,9 @@ pub mod basic;
 macro_rules! fixed_width_imports {
     () => {
         use fixed_width::{define_u_basic, raw_define_u};
+        use malachite_base::comparison::traits::{Max, Min};
         use malachite_base::num::basic::traits::{One, Two, Zero};
-        use malachite_base::num::logic::traits::SignificantBits;
+        use std::fmt::{Display, Formatter, Result};
     };
 }
 
