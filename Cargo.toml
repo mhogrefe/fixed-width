@@ -7,5 +7,9 @@ edition = "2018"
 name = "fixed_width"
 path = "src/lib.rs"
 
+[[bin]]
+name = "fixed_width_main"
+path = "src/bin.rs"
+
 [dependencies]
 malachite-base = { path = "../malachite/malachite-base" }
