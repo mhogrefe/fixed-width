@@ -3,6 +3,9 @@ name = "fixed-width"
 version = "0.1.0"
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "fixed_width"
+path = "src/lib.rs"
 
 [dependencies]
+malachite-base = { path = "../malachite/malachite-base" }
