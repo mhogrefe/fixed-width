@@ -1,17 +1,24 @@
+pub mod arithmetic;
 pub mod basic;
 pub mod conversion;
+pub mod logic;
 
 #[macro_export]
 macro_rules! fixed_width_imports {
     () => {
         use fixed_width::{define_u_basic, raw_define_u};
         use malachite_base::comparison::traits::{Max, Min};
+        use malachite_base::num::arithmetic::traits::{
+            CheckedAdd, SaturatingAdd, SaturatingAddAssign, WrappingAdd, WrappingAddAssign,
+        };
         use malachite_base::num::basic::traits::{One, Two, Zero};
         use malachite_base::num::conversion::traits::{
             CheckedFrom, OverflowingFrom, SaturatingFrom, WrappingFrom,
         };
+        use malachite_base::num::logic::traits::BitAccess;
         use std::cmp::min;
         use std::fmt::{Display, Formatter, Result};
+        use std::ops::{Add, AddAssign};
     };
 }
 
@@ -22,6 +29,8 @@ macro_rules! raw_define_u {
         pub struct $name($underlying);
 
         define_u_basic!($name, $width, $underlying);
+        define_u_arithmetic!($name, $width, $underlying);
+        define_u_logic!($name, $width, $underlying);
     };
 }
 

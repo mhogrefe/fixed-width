@@ -12,6 +12,10 @@ macro_rules! define_u_basic {
                 );
                 $name(u)
             }
+
+            pub const fn x(self) -> $t {
+                self.0
+            }
         }
 
         impl Zero for $name {
