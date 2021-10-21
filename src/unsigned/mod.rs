@@ -1,4 +1,5 @@
 pub mod basic;
+pub mod conversion;
 
 #[macro_export]
 macro_rules! fixed_width_imports {
@@ -6,6 +7,10 @@ macro_rules! fixed_width_imports {
         use fixed_width::{define_u_basic, raw_define_u};
         use malachite_base::comparison::traits::{Max, Min};
         use malachite_base::num::basic::traits::{One, Two, Zero};
+        use malachite_base::num::conversion::traits::{
+            CheckedFrom, OverflowingFrom, SaturatingFrom, WrappingFrom,
+        };
+        use std::cmp::min;
         use std::fmt::{Display, Formatter, Result};
     };
 }
@@ -21,25 +26,21 @@ macro_rules! raw_define_u {
 }
 
 #[macro_export]
-macro_rules! define_u_with_type {
-    ($macro_macro_name: ident, $t: ident) => {
+macro_rules! define_u_u8 {
+    ($macro_name: ident, $width: expr) => {
         #[macro_export]
-        macro_rules! $macro_macro_name {
-            ($macro_name: ident, $width: expr) => {
-                #[macro_export]
-                macro_rules! $macro_name {
-                    ($name: ident) => {
-                        raw_define_u!($name, $width, $t);
-                    };
-                }
+        macro_rules! $macro_name {
+            ($name: ident) => {
+                raw_define_u!($name, $width, u8);
+                define_from_u_u_builtin_same!($name, $width, u8);
+                define_from_u_u_builtin_larger!($name, $width, u8, u16);
+                define_from_u_u_builtin_larger!($name, $width, u8, u32);
+                define_from_u_u_builtin_larger!($name, $width, u8, u64);
+                define_from_u_u_builtin_larger!($name, $width, u8, u128);
             };
         }
     };
 }
-
-// Generated using `cargo run`
-
-define_u_with_type!(define_u_u8, u8);
 define_u_u8!(define_u2, 2);
 define_u_u8!(define_u3, 3);
 define_u_u8!(define_u4, 4);
@@ -47,7 +48,22 @@ define_u_u8!(define_u5, 5);
 define_u_u8!(define_u6, 6);
 define_u_u8!(define_u7, 7);
 
-define_u_with_type!(define_u_u16, u16);
+#[macro_export]
+macro_rules! define_u_u16 {
+    ($macro_name: ident, $width: expr) => {
+        #[macro_export]
+        macro_rules! $macro_name {
+            ($name: ident) => {
+                raw_define_u!($name, $width, u16);
+                define_from_u_u_builtin_smaller!($name, $width, u16, u8);
+                define_from_u_u_builtin_same!($name, $width, u16);
+                define_from_u_u_builtin_larger!($name, $width, u16, u32);
+                define_from_u_u_builtin_larger!($name, $width, u16, u64);
+                define_from_u_u_builtin_larger!($name, $width, u16, u128);
+            };
+        }
+    };
+}
 define_u_u16!(define_u9, 9);
 define_u_u16!(define_u10, 10);
 define_u_u16!(define_u11, 11);
@@ -56,7 +72,22 @@ define_u_u16!(define_u13, 13);
 define_u_u16!(define_u14, 14);
 define_u_u16!(define_u15, 15);
 
-define_u_with_type!(define_u_u32, u32);
+#[macro_export]
+macro_rules! define_u_u32 {
+    ($macro_name: ident, $width: expr) => {
+        #[macro_export]
+        macro_rules! $macro_name {
+            ($name: ident) => {
+                raw_define_u!($name, $width, u32);
+                define_from_u_u_builtin_smaller!($name, $width, u32, u8);
+                define_from_u_u_builtin_smaller!($name, $width, u32, u16);
+                define_from_u_u_builtin_same!($name, $width, u32);
+                define_from_u_u_builtin_larger!($name, $width, u32, u64);
+                define_from_u_u_builtin_larger!($name, $width, u32, u128);
+            };
+        }
+    };
+}
 define_u_u32!(define_u17, 17);
 define_u_u32!(define_u18, 18);
 define_u_u32!(define_u19, 19);
@@ -73,7 +104,22 @@ define_u_u32!(define_u29, 29);
 define_u_u32!(define_u30, 30);
 define_u_u32!(define_u31, 31);
 
-define_u_with_type!(define_u_u64, u64);
+#[macro_export]
+macro_rules! define_u_u64 {
+    ($macro_name: ident, $width: expr) => {
+        #[macro_export]
+        macro_rules! $macro_name {
+            ($name: ident) => {
+                raw_define_u!($name, $width, u64);
+                define_from_u_u_builtin_smaller!($name, $width, u64, u8);
+                define_from_u_u_builtin_smaller!($name, $width, u64, u16);
+                define_from_u_u_builtin_smaller!($name, $width, u64, u32);
+                define_from_u_u_builtin_same!($name, $width, u64);
+                define_from_u_u_builtin_larger!($name, $width, u64, u128);
+            };
+        }
+    };
+}
 define_u_u64!(define_u33, 33);
 define_u_u64!(define_u34, 34);
 define_u_u64!(define_u35, 35);
@@ -106,7 +152,22 @@ define_u_u64!(define_u61, 61);
 define_u_u64!(define_u62, 62);
 define_u_u64!(define_u63, 63);
 
-define_u_with_type!(define_u_u128, u128);
+#[macro_export]
+macro_rules! define_u_u128 {
+    ($macro_name: ident, $width: expr) => {
+        #[macro_export]
+        macro_rules! $macro_name {
+            ($name: ident) => {
+                raw_define_u!($name, $width, u128);
+                define_from_u_u_builtin_smaller!($name, $width, u128, u8);
+                define_from_u_u_builtin_smaller!($name, $width, u128, u16);
+                define_from_u_u_builtin_smaller!($name, $width, u128, u32);
+                define_from_u_u_builtin_smaller!($name, $width, u128, u64);
+                define_from_u_u_builtin_same!($name, $width, u128);
+            };
+        }
+    };
+}
 define_u_u128!(define_u65, 65);
 define_u_u128!(define_u66, 66);
 define_u_u128!(define_u67, 67);
