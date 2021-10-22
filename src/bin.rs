@@ -11,18 +11,37 @@ pub fn main() {
         println!("            ($name: ident) => {{");
         println!("                raw_define_u!($name, $width, u{});", n);
         for t in SIZES {
-            let s = match t.cmp(&n) {
-                Ordering::Less => format!(
-                    "define_from_u_u_builtin_smaller!($name, $width, u{}, u{});",
-                    n, t
+            let (su, si) = match t.cmp(&n) {
+                Ordering::Less => (
+                    format!(
+                        "define_from_u_u_builtin_smaller!($name, $width, u{}, u{});",
+                        n, t
+                    ),
+                    format!(
+                        "define_from_u_i_builtin_smaller!($name, $width, u{}, i{});",
+                        n, t
+                    ),
                 ),
-                Ordering::Equal => format!("define_from_u_u_builtin_same!($name, $width, u{});", n),
-                Ordering::Greater => format!(
-                    "define_from_u_u_builtin_larger!($name, $width, u{}, u{});",
-                    n, t
+                Ordering::Equal => (
+                    format!("define_from_u_u_builtin_same!($name, $width, u{});", n),
+                    format!(
+                        "define_from_u_i_builtin_same!($name, $width, u{0}, i{0});",
+                        n
+                    ),
+                ),
+                Ordering::Greater => (
+                    format!(
+                        "define_from_u_u_builtin_larger!($name, $width, u{}, u{});",
+                        n, t
+                    ),
+                    format!(
+                        "define_from_u_i_builtin_larger!($name, $width, u{}, i{});",
+                        n, t
+                    ),
                 ),
             };
-            println!("                {}", s);
+            println!("                {}", su);
+            println!("                {}", si);
         }
         println!("            }};");
         println!("        }}");

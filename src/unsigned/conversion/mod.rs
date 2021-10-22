@@ -220,6 +220,250 @@ macro_rules! define_from_u_u_builtin_smaller {
     };
 }
 
+// Convert between builtin type T and Ux, where T the signed version of the Ux's underlying type
+#[macro_export]
+macro_rules! define_from_u_i_builtin_same {
+    ($name: ident, $width: expr, $t: ident, $i: ident) => {
+        impl CheckedFrom<$name> for $i {
+            #[inline]
+            fn checked_from(u: $name) -> Option<$i> {
+                let i = u.0 as $i;
+                if i >= 0 {
+                    Some(i)
+                } else {
+                    None
+                }
+            }
+        }
+
+        impl WrappingFrom<$name> for $i {
+            #[inline]
+            fn wrapping_from(u: $name) -> $i {
+                u.0 as $i
+            }
+        }
+
+        impl SaturatingFrom<$name> for $i {
+            #[inline]
+            fn saturating_from(u: $name) -> $i {
+                let i = u.0 as $i;
+                if i >= 0 {
+                    i
+                } else {
+                    $i::MAX
+                }
+            }
+        }
+
+        impl OverflowingFrom<$name> for $i {
+            #[inline]
+            fn overflowing_from(u: $name) -> ($i, bool) {
+                let i = u.0 as $i;
+                (i, i < 0)
+            }
+        }
+
+        impl CheckedFrom<$i> for $name {
+            #[inline]
+            fn checked_from(i: $i) -> Option<$name> {
+                if i >= 0 {
+                    $name::checked_from(i.unsigned_abs())
+                } else {
+                    None
+                }
+            }
+        }
+
+        impl WrappingFrom<$i> for $name {
+            #[inline]
+            fn wrapping_from(i: $i) -> $name {
+                $name((i as $t) & $name::MAX.0)
+            }
+        }
+
+        impl SaturatingFrom<$i> for $name {
+            #[inline]
+            fn saturating_from(i: $i) -> $name {
+                if i >= 0 {
+                    $name::saturating_from(i.unsigned_abs())
+                } else {
+                    $name(0)
+                }
+            }
+        }
+
+        impl OverflowingFrom<$i> for $name {
+            #[inline]
+            fn overflowing_from(i: $i) -> ($name, bool) {
+                (
+                    $name((i as $t) & $name::MAX.0),
+                    i < 0 || i.unsigned_abs() > $name::MAX.0,
+                )
+            }
+        }
+    };
+}
+
+// Convert between builtin type T and Ux, where T is larger than the signed version of the Ux's
+// underlying type
+#[macro_export]
+macro_rules! define_from_u_i_builtin_larger {
+    ($name: ident, $width: expr, $t: ident, $i: ident) => {
+        impl From<$name> for $i {
+            #[inline]
+            fn from(u: $name) -> $i {
+                $i::from(u.0)
+            }
+        }
+
+        impl CheckedFrom<$name> for $i {
+            #[inline]
+            fn checked_from(u: $name) -> Option<$i> {
+                Some($i::from(u.0))
+            }
+        }
+
+        impl WrappingFrom<$name> for $i {
+            #[inline]
+            fn wrapping_from(u: $name) -> $i {
+                $i::from(u.0)
+            }
+        }
+
+        impl SaturatingFrom<$name> for $i {
+            #[inline]
+            fn saturating_from(u: $name) -> $i {
+                $i::from(u.0)
+            }
+        }
+
+        impl OverflowingFrom<$name> for $i {
+            #[inline]
+            fn overflowing_from(u: $name) -> ($i, bool) {
+                ($i::from(u.0), false)
+            }
+        }
+
+        impl CheckedFrom<$i> for $name {
+            #[inline]
+            fn checked_from(i: $i) -> Option<$name> {
+                if i >= 0 {
+                    $name::checked_from(i.unsigned_abs())
+                } else {
+                    None
+                }
+            }
+        }
+
+        impl WrappingFrom<$i> for $name {
+            #[inline]
+            fn wrapping_from(i: $i) -> $name {
+                $name((i as $t) & $name::MAX.0)
+            }
+        }
+
+        impl SaturatingFrom<$i> for $name {
+            #[inline]
+            fn saturating_from(i: $i) -> $name {
+                if i >= 0 {
+                    $name::saturating_from(i.unsigned_abs())
+                } else {
+                    $name(0)
+                }
+            }
+        }
+
+        impl OverflowingFrom<$i> for $name {
+            #[inline]
+            fn overflowing_from(i: $i) -> ($name, bool) {
+                (
+                    $name((i as $t) & $name::MAX.0),
+                    i < 0 || i > $i::from($name::MAX.0),
+                )
+            }
+        }
+    };
+}
+
+// Convert between builtin type T and Ux, where T is smaller than the signed version of the Ux's
+// underlying type
+#[macro_export]
+macro_rules! define_from_u_i_builtin_smaller {
+    ($name: ident, $width: expr, $t: ident, $i: ident) => {
+        impl CheckedFrom<$name> for $i {
+            #[inline]
+            fn checked_from(u: $name) -> Option<$i> {
+                if u.0 <= $i::MAX as $t {
+                    Some(u.0 as $i)
+                } else {
+                    None
+                }
+            }
+        }
+
+        impl WrappingFrom<$name> for $i {
+            #[inline]
+            fn wrapping_from(u: $name) -> $i {
+                u.0 as $i
+            }
+        }
+
+        impl SaturatingFrom<$name> for $i {
+            #[inline]
+            fn saturating_from(u: $name) -> $i {
+                if u.0 <= $i::MAX as $t {
+                    u.0 as $i
+                } else {
+                    $i::MAX
+                }
+            }
+        }
+
+        impl OverflowingFrom<$name> for $i {
+            #[inline]
+            fn overflowing_from(u: $name) -> ($i, bool) {
+                (u.0 as $i, u.0 <= $i::MAX as $t)
+            }
+        }
+
+        impl CheckedFrom<$i> for $name {
+            #[inline]
+            fn checked_from(i: $i) -> Option<$name> {
+                if i >= 0 {
+                    Some($name(i as $t))
+                } else {
+                    None
+                }
+            }
+        }
+
+        impl WrappingFrom<$i> for $name {
+            #[inline]
+            fn wrapping_from(i: $i) -> $name {
+                $name(i as $t)
+            }
+        }
+
+        impl SaturatingFrom<$i> for $name {
+            #[inline]
+            fn saturating_from(i: $i) -> $name {
+                if i >= 0 {
+                    $name(i as $t)
+                } else {
+                    $name(0)
+                }
+            }
+        }
+
+        impl OverflowingFrom<$i> for $name {
+            #[inline]
+            fn overflowing_from(i: $i) -> ($name, bool) {
+                ($name(i as $t), i < 0)
+            }
+        }
+    };
+}
+
 // width_1 must be less than width_2
 #[macro_export]
 macro_rules! define_from_u_u_same {
