@@ -1,9 +1,4 @@
-use fixed_width::{
-    define_from_u_i_builtin_larger, define_from_u_i_builtin_same, define_from_u_i_builtin_smaller,
-    define_from_u_u_builtin_larger, define_from_u_u_builtin_same, define_from_u_u_builtin_smaller,
-    define_from_u_u_same, define_u20, define_u3, define_u5, define_u_arithmetic,
-    define_u_arithmetic_shift_i, define_u_arithmetic_shift_u, define_u_logic, fixed_width_imports,
-};
+use fixed_width::{define_u20, define_u3, define_u5, fixed_width_imports};
 
 fixed_width_imports!();
 define_u3!(U3);

@@ -6,7 +6,13 @@ pub mod logic;
 #[macro_export]
 macro_rules! fixed_width_imports {
     () => {
-        use fixed_width::{define_u_basic, raw_define_u};
+        use fixed_width::{
+            define_from_u_i_builtin_larger, define_from_u_i_builtin_same,
+            define_from_u_i_builtin_smaller, define_from_u_u_builtin_larger,
+            define_from_u_u_builtin_same, define_from_u_u_builtin_smaller, define_from_u_u_same,
+            define_u_arithmetic, define_u_arithmetic_shift_i, define_u_arithmetic_shift_u,
+            define_u_basic, define_u_logic, raw_define_u,
+        };
         use malachite_base::comparison::traits::{Max, Min};
         use malachite_base::num::arithmetic::traits::{
             CheckedAdd, CheckedSub, OverflowingAdd, OverflowingAddAssign, OverflowingSub,
