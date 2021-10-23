@@ -167,6 +167,18 @@ macro_rules! define_u_arithmetic {
             }
         }
 
+        impl Parity for $name {
+            #[inline]
+            fn even(self) -> bool {
+                self.0.even()
+            }
+
+            #[inline]
+            fn odd(self) -> bool {
+                self.0.odd()
+            }
+        }
+
         define_u_arithmetic_shift_u!($name, $width, $t, u8);
         define_u_arithmetic_shift_u!($name, $width, $t, u16);
         define_u_arithmetic_shift_u!($name, $width, $t, u32);

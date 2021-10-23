@@ -16,7 +16,7 @@ macro_rules! fixed_width_imports {
         use malachite_base::comparison::traits::{Max, Min};
         use malachite_base::num::arithmetic::traits::{
             CheckedAdd, CheckedSub, OverflowingAdd, OverflowingAddAssign, OverflowingSub,
-            OverflowingSubAssign, SaturatingAdd, SaturatingAddAssign, SaturatingSub,
+            OverflowingSubAssign, Parity, SaturatingAdd, SaturatingAddAssign, SaturatingSub,
             SaturatingSubAssign, WrappingAdd, WrappingAddAssign, WrappingSub, WrappingSubAssign,
         };
         use malachite_base::num::basic::traits::{One, Two, Zero};
