@@ -1,6 +1,53 @@
 #[macro_export]
 macro_rules! define_u_arithmetic {
     ($name: ident, $width: expr, $t: ident) => {
+        impl CheckedNeg for $name {
+            type Output = $name;
+
+            #[inline]
+            fn checked_neg(self) -> Option<$name> {
+                if self.0 == 0 {
+                    Some(self)
+                } else {
+                    None
+                }
+            }
+        }
+
+        impl WrappingNeg for $name {
+            type Output = $name;
+
+            #[inline]
+            fn wrapping_neg(self) -> $name {
+                $name(self.0.wrapping_neg() & $name::MAX.0)
+            }
+        }
+
+        impl WrappingNegAssign for $name {
+            #[inline]
+            fn wrapping_neg_assign(&mut self) {
+                *self = self.wrapping_neg();
+            }
+        }
+
+        impl OverflowingNeg for $name {
+            type Output = $name;
+
+            #[inline]
+            fn overflowing_neg(self) -> ($name, bool) {
+                ($name(self.0.wrapping_neg() & $name::MAX.0), self.0 != 0)
+            }
+        }
+
+        impl OverflowingNegAssign for $name {
+            #[inline]
+            fn overflowing_neg_assign(&mut self) -> bool {
+                let (x, b) = self.overflowing_neg();
+                *self = x;
+                b
+            }
+        }
+
         impl Add for $name {
             type Output = $name;
 
